@@ -59,7 +59,27 @@ def costLogisticRegression(Y, X, theta):
     m = len(Y)
     leftTrue = -Y * np.log(hypothesisLogisticRegression(X, theta))
     rightFalse = -(1-Y) * np.log(1 - hypothesisLogisticRegression(X, theta))
-    return (1 / m) * np.add(leftTrue, rightFalse).sum()
+    return (1.0 / m) * np.add(leftTrue, rightFalse).sum()
+
+
+def gradientDescentLogisticRegression(Y, X, theta):
+    """
+    Calculates theta (coefficients for features) using gradient descent
+    algorithm.
+
+    Equation:
+    grad = (1 / m) * (X' * (h - Y))
+    m - size of training set
+    n - number of features (including feature zero - 'bias')
+
+    Y - output, target variable (size m x 1)
+    X - the independent variables (features) (size m x n)
+    theta - the coefficent for the features (size n x 1)
+
+    return - optimal theta (coefficients for features)
+    """
+    m = len(Y)
+    return (1.0 / m) * np.dot(np.transpose(X), h - hypothesisLogisticRegression(X, theta))
 
 
 if __name__ == "__main__":

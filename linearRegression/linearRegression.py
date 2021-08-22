@@ -7,7 +7,7 @@ def costFunction(Y, X, theta):
     Cost function for linear regression with multiple features.
 
     Equation:
-    theta = (1/m) * sum((Y - X * theta)^2)
+    cost = (1/m) * sum((Y - X * theta)^2)
     m - size of training set
     n - number of features (including feature zero - 'bias')
 
@@ -51,7 +51,7 @@ def predictOutcome(X, theta):
     features) for the given input data.
 
     Equation:
-    theta = X * theta
+    outcome = X * theta
     n - number of features (including feature zero - 'bias')
 
     X - the independent variables (features) (size 1 x n)

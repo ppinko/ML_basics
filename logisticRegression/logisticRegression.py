@@ -79,7 +79,7 @@ def gradientDescentLogisticRegression(Y, X, theta):
     return - optimal theta (coefficients for features)
     """
     m = len(Y)
-    return (1.0 / m) * np.dot(np.transpose(X), h - hypothesisLogisticRegression(X, theta))
+    return (1.0 / m) * np.dot(np.transpose(X), hypothesisLogisticRegression(X, theta) - Y)
 
 
 if __name__ == "__main__":
@@ -88,3 +88,21 @@ if __name__ == "__main__":
     sig = sigmoid(arr)
     print('Solution for sigmoid function for arr = [-1, 0, 1]:')
     print(' [{0}, {1}, {2}]'.format(sig[0][0], sig[0][1], sig[0][2]))
+
+    # load data for testing
+    df = pd.read_csv('universityAdmission.txt')
+    X = np.array(df[['scoreA', 'scoreB']])
+    X = np.column_stack((np.ones((len(X))), X))
+    Y = np.array(df['decision'])
+    Y = Y.reshape(len(Y), 1)
+
+    #
+    thetaZero = np.zeros((3, 1))
+    initialCost = costLogisticRegression(Y, X, thetaZero)
+    initialGradient = gradientDescentLogisticRegression(Y, X, thetaZero)
+    print('Cost at initial theta (zeros): {0}'.format(initialCost))
+    print('Expected cost (approx): 0.693')
+    print('Gradient at initial theta (zeros):')
+    print('Resul = {0} {1} {2}'.format(
+        initialGradient[0][0], initialGradient[1][0], initialGradient[2][0]))
+    print('Expected gradients (approx): -0.1000 -12.0092 -11.2628')

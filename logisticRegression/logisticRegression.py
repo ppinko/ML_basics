@@ -1,5 +1,28 @@
 import numpy as np
 import pandas as pd
+import pylab
+
+
+def visualizeData1():
+    """
+    Visualize data for students admission to the university based on the results
+    from two exams.
+    """
+    # load the dataset
+    data = np.loadtxt('universityAdmission.txt', delimiter=',', skiprows=1)
+
+    X = data[:, 0:2]
+    y = data[:, 2]
+
+    positive = np.where(y == 1)
+    negative = np.where(y == 0)
+    pylab.scatter(X[positive, 0], X[positive, 1], marker='o', c='b')
+    pylab.scatter(X[negative, 0], X[negative, 1], marker='x', c='r')
+    pylab.xlabel('Exam 1 score')
+    pylab.ylabel('Exam 2 score')
+    pylab.legend(['Not Admitted', 'Admitted'])
+    pylab.title(label='University admission')
+    pylab.show()
 
 
 def sigmoid(Z):
@@ -82,6 +105,9 @@ def gradientLogisticRegression(Y, X, theta):
 
 
 if __name__ == "__main__":
+    # visualize data
+    visualizeData1()
+
     # test sigmoid funciton
     arr = np.array([[-1, 0, 1]])
     sig = sigmoid(arr)

@@ -54,7 +54,7 @@ def costLogisticRegression(Y, X, theta):
     X - the independent variables (features) (size m x n)
     theta - the coefficent for the features (size n x 1)
 
-    return - cost for given theta and bias
+    return - cost for given theta
     """
     m = len(Y)
     leftTrue = -Y * np.log(hypothesisLogisticRegression(X, theta))
@@ -62,10 +62,9 @@ def costLogisticRegression(Y, X, theta):
     return (1.0 / m) * np.add(leftTrue, rightFalse).sum()
 
 
-def gradientDescentLogisticRegression(Y, X, theta):
+def gradientLogisticRegression(Y, X, theta):
     """
-    Calculates theta (coefficients for features) using gradient descent
-    algorithm.
+    Calculates gradient.
 
     Equation:
     grad = (1 / m) * (X' * (h - Y))
@@ -76,7 +75,7 @@ def gradientDescentLogisticRegression(Y, X, theta):
     X - the independent variables (features) (size m x n)
     theta - the coefficent for the features (size n x 1)
 
-    return - optimal theta (coefficients for features)
+    return - optimal gradient
     """
     m = len(Y)
     return (1.0 / m) * np.dot(np.transpose(X), hypothesisLogisticRegression(X, theta) - Y)
@@ -96,7 +95,7 @@ if __name__ == "__main__":
     Y = np.array(df['decision'])
     Y = Y.reshape(len(Y), 1)
 
-    #
+    # test for cost function and gradient
     thetaZero = np.zeros((3, 1))
     initialCost = costLogisticRegression(Y, X, thetaZero)
     initialGradient = gradientDescentLogisticRegression(Y, X, thetaZero)

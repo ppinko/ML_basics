@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pylab
+import scipy.optimize as op
 
 
 def visualizeData1():
@@ -42,7 +43,7 @@ def sigmoid(Z):
     return sig
 
 
-def hypothesisLogisticRegression(X, theta):
+def hypothesisLogisticRegression(theta, X):
     """
     Calculates hypthothesis for logistic regression.
 
@@ -59,11 +60,12 @@ def hypothesisLogisticRegression(X, theta):
 
     return - value based on the hyphothesis
     """
+    theta = theta.reshape(len(theta), 1)
     temp = np.dot(X, theta)
     return sigmoid(temp)
 
 
-def costLogisticRegression(Y, X, theta):
+def costLogisticRegression(theta, X, Y):
     """
     Cost function for logistic regression with multiple features.
 
@@ -80,12 +82,13 @@ def costLogisticRegression(Y, X, theta):
     return - cost for given theta
     """
     m = len(Y)
-    leftTrue = -Y * np.log(hypothesisLogisticRegression(X, theta))
-    rightFalse = -(1-Y) * np.log(1 - hypothesisLogisticRegression(X, theta))
+    theta = theta.reshape(len(theta), 1)
+    leftTrue = -Y * np.log(hypothesisLogisticRegression(theta, X))
+    rightFalse = -(1-Y) * np.log(1 - hypothesisLogisticRegression(theta, X))
     return (1.0 / m) * np.add(leftTrue, rightFalse).sum()
 
 
-def gradientLogisticRegression(Y, X, theta):
+def gradientLogisticRegression(theta, X, Y):
     """
     Calculates gradient.
 
@@ -101,7 +104,34 @@ def gradientLogisticRegression(Y, X, theta):
     return - optimal gradient
     """
     m = len(Y)
-    return (1.0 / m) * np.dot(np.transpose(X), hypothesisLogisticRegression(X, theta) - Y)
+    theta = theta.reshape(len(theta), 1)
+    grad = (1.0 / m) * np.dot(np.transpose(X),
+                              hypothesisLogisticRegression(theta, X) - Y)
+    return grad.flatten()
+
+
+def optimizeTheta(theta, X, Y, costFunction, gradientFunction, method):
+    """
+    Calculates optimal theta.
+
+    m - size of training set
+    n - number of features (including feature zero - 'bias')
+
+    Y - output, target variable (size m x 1)
+    X - the independent variables (features) (size m x n)
+    theta - the initial coefficent for the features (size n x 1)
+    costFunction - cost function
+    gradientFunction - gradient function
+    method - type of solver
+
+    return - optimal theta
+    """
+    result = op.minimize(fun=costFunction,
+                         x0=theta,
+                         args=(X, Y),
+                         method=method,
+                         jac=gradientFunction)
+    return result.x
 
 
 if __name__ == "__main__":
@@ -112,7 +142,7 @@ if __name__ == "__main__":
     arr = np.array([[-1, 0, 1]])
     sig = sigmoid(arr)
     print('Solution for sigmoid function for arr = [-1, 0, 1]:')
-    print(' [{0}, {1}, {2}]'.format(sig[0][0], sig[0][1], sig[0][2]))
+    print(' [{0}, {1}, {2}]\n'.format(sig[0][0], sig[0][1], sig[0][2]))
 
     # load data for testing
     df = pd.read_csv('universityAdmission.txt')
@@ -122,12 +152,20 @@ if __name__ == "__main__":
     Y = Y.reshape(len(Y), 1)
 
     # test for cost function and gradient
-    thetaZero = np.zeros((3, 1))
-    initialCost = costLogisticRegression(Y, X, thetaZero)
-    initialGradient = gradientDescentLogisticRegression(Y, X, thetaZero)
+    thetaZero = np.zeros(3)
+    initialCost = costLogisticRegression(thetaZero, X, Y)
+    initialGradient = gradientLogisticRegression(thetaZero, X, Y)
     print('Cost at initial theta (zeros): {0}'.format(initialCost))
     print('Expected cost (approx): 0.693')
     print('Gradient at initial theta (zeros):')
-    print('Resul = {0} {1} {2}'.format(
-        initialGradient[0][0], initialGradient[1][0], initialGradient[2][0]))
-    print('Expected gradients (approx): -0.1000 -12.0092 -11.2628')
+    print('Result = {0} {1} {2}'.format(
+        initialGradient[0], initialGradient[1], initialGradient[2]))
+    print('Expected gradients (approx): -0.1000 -12.0092 -11.2628\n')
+
+    # use scipy optimization for finding optimal theta
+    optimizedTheta = optimizeTheta(
+        thetaZero, X, Y, costLogisticRegression, gradientLogisticRegression, 'TNC')
+    print('Calculation using optimization methods from scipy:')
+    print('Result = {0} {1} {2}'.format(
+        optimizedTheta[0], optimizedTheta[1], optimizedTheta[2]))
+    print('Expected gradients (approx): -25.161 0.206 0.201')

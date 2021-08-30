@@ -134,25 +134,6 @@ def optimizeTheta(theta, X, Y, costFunction, gradientFunction, method):
     return result.x
 
 
-def predictProbability(theta, singleX):
-    """
-    Cost function for logistic regression with multiple features.
-
-    Equation:
-    probability = sigmoid(singleX * theta)
-
-    m - size of training set
-    n - number of features (including feature zero - 'bias')
-
-    singleX - the independent variables (features) (size 1 x n)
-    theta - the coefficent for the features (size n x 1)
-
-    return - probability for a given features
-    """
-    theta = theta.reshape(len(theta), 1)
-    return sigmoid(np.dot(singleX, theta))[0][0]
-
-
 if __name__ == "__main__":
     # visualize data
     visualizeData1()

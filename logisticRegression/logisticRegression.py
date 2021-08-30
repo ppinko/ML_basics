@@ -134,6 +134,25 @@ def optimizeTheta(theta, X, Y, costFunction, gradientFunction, method):
     return result.x
 
 
+def predictProbability(theta, singleX):
+    """
+    Cost function for logistic regression with multiple features.
+
+    Equation:
+    probability = sigmoid(singleX * theta)
+
+    m - size of training set
+    n - number of features (including feature zero - 'bias')
+
+    singleX - the independent variables (features) (size 1 x n)
+    theta - the coefficent for the features (size n x 1)
+
+    return - probability for a given features
+    """
+    theta = theta.reshape(len(theta), 1)
+    return sigmoid(np.dot(singleX, theta))[0][0]
+
+
 if __name__ == "__main__":
     # visualize data
     visualizeData1()
@@ -168,4 +187,11 @@ if __name__ == "__main__":
     print('Calculation using optimization methods from scipy:')
     print('Result = {0} {1} {2}'.format(
         optimizedTheta[0], optimizedTheta[1], optimizedTheta[2]))
-    print('Expected gradients (approx): -25.161 0.206 0.201')
+    print('Expected gradients (approx): -25.161 0.206 0.201\n')
+
+    # predict probability for a student with scores 45 and 85
+    singleX = np.array([[1.0, 45.0, 85.0]])
+    probability = hypothesisLogisticRegression(optimizedTheta, singleX)
+    print('For a student with scores 45 and 85, we predict an admission probability of {0}'.format(
+        probability[0][0]))
+    print('Expected value: 0.775 +/- 0.002\n')

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import pylab
+import matplotlib.pyplot as plt
 import scipy.optimize as op
 
 
@@ -17,13 +17,13 @@ def visualizeData1():
 
     positive = np.where(y == 1)
     negative = np.where(y == 0)
-    pylab.scatter(X[positive, 0], X[positive, 1], marker='o', c='b')
-    pylab.scatter(X[negative, 0], X[negative, 1], marker='x', c='r')
-    pylab.xlabel('Exam 1 score')
-    pylab.ylabel('Exam 2 score')
-    pylab.legend(['Not Admitted', 'Admitted'])
-    pylab.title(label='University admission')
-    pylab.show()
+    plt.scatter(X[positive, 0], X[positive, 1], marker='o', c='b')
+    plt.scatter(X[negative, 0], X[negative, 1], marker='x', c='r')
+    plt.xlabel('Exam 1 score')
+    plt.ylabel('Exam 2 score')
+    plt.legend(['Not Admitted', 'Admitted'])
+    plt.title(label='University admission')
+    plt.show()
 
 
 def sigmoid(Z):

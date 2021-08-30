@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import scipy.optimize as op
 
 
-def visualizeData1():
+def visualizeDataInitial1():
     """
     Visualize data for students admission to the university based on the results
     from two exams.
@@ -17,11 +17,11 @@ def visualizeData1():
 
     positive = np.where(y == 1)
     negative = np.where(y == 0)
-    plt.scatter(X[positive, 0], X[positive, 1], marker='o', c='b')
+    plt.scatter(X[positive, 0], X[positive, 1], marker='o', c='g')
     plt.scatter(X[negative, 0], X[negative, 1], marker='x', c='r')
     plt.xlabel('Exam 1 score')
     plt.ylabel('Exam 2 score')
-    plt.legend(['Not Admitted', 'Admitted'])
+    plt.legend(['Admitted', 'Not Admitted'])
     plt.title(label='University admission')
     plt.show()
 
@@ -134,6 +134,40 @@ def optimizeTheta(theta, X, Y, costFunction, gradientFunction, method):
     return result.x
 
 
+def visualizeDataHypothesisLine1(theta):
+    """
+    Visualize data for students admission to the university based on the results
+    from two exams. It draws hypothesis line.
+
+    theta - the optimized coefficents for the features (size n x 1)
+    """
+    # load the dataset
+    data = np.loadtxt('universityAdmission.txt', delimiter=',', skiprows=1)
+
+    X = data[:, 0:2]
+    y = data[:, 2]
+
+    positive = np.where(y == 1)
+    negative = np.where(y == 0)
+    plt.scatter(X[positive, 0], X[positive, 1], marker='o', c='g')
+    plt.scatter(X[negative, 0], X[negative, 1], marker='x', c='r')
+    plt.xlabel('Exam 1 score')
+    plt.ylabel('Exam 2 score')
+    plt.legend(['Admitted', 'Not Admitted'])
+    plt.title(label='University admission')
+
+    # draws hypothesis line
+    X1 = data[:, 0:1]
+    temp = theta[0] - 0.5
+    xPoints = np.arange(X1.min(), X1.max(), 0.01)
+    print(xPoints.shape)
+    yPoints = -(theta[1] * xPoints + temp) / theta[2]
+    print(yPoints.shape)
+    plt.plot(xPoints, yPoints, '-b')
+
+    plt.show()
+
+
 def predictOutcome(theta, X):
     """
     Predict outcome for a given data set and theta.
@@ -177,7 +211,7 @@ def checkAccuracy(predictions, Y):
 
 if __name__ == "__main__":
     # visualize data
-    visualizeData1()
+    visualizeDataInitial1()
 
     # test sigmoid funciton
     arr = np.array([[-1, 0, 1]])
@@ -210,6 +244,9 @@ if __name__ == "__main__":
     print('Result = {0} {1} {2}'.format(
         optimizedTheta[0], optimizedTheta[1], optimizedTheta[2]))
     print('Expected gradients (approx): -25.161 0.206 0.201\n')
+
+    # visualize data witg hypothesis line
+    visualizeDataHypothesisLine1(optimizedTheta)
 
     # predict probability for a student with scores 45 and 85
     singleX = np.array([[1.0, 45.0, 85.0]])

@@ -134,6 +134,47 @@ def optimizeTheta(theta, X, Y, costFunction, gradientFunction, method):
     return result.x
 
 
+def predictOutcome(theta, X):
+    """
+    Predict outcome for a given data set and theta.
+
+    m - size of training set
+    n - number of features (including feature zero - 'bias')
+
+    theta - the coefficent for the features (size n x 1)
+    X - the independent variables (features) (size m x n)
+
+    return - prediction for a given set of features
+    """
+    hypo = hypothesisLogisticRegression(theta, X)
+    for i in range(len(hypo)):
+        if hypo[i][0] >= 0.5:
+            hypo[i][0] = 1
+        else:
+            hypo[i][0] = 0
+    return hypo
+
+
+def checkAccuracy(predictions, Y):
+    """
+    Check accuracy of the predictions.
+
+    m - size of training set
+    n - number of features (including feature zero - 'bias')
+
+    predictions - predicted output (size m x 1)
+    Y - output, target variable (size m x 1)
+
+    return - accuracy of the predictions
+    """
+    m = len(Y)
+    total = 0
+    for i in range(m):
+        if Y[i][0] == predictions[i][0]:
+            total += 1
+    return 100.0 * total / m
+
+
 if __name__ == "__main__":
     # visualize data
     visualizeData1()
@@ -176,3 +217,9 @@ if __name__ == "__main__":
     print('For a student with scores 45 and 85, we predict an admission probability of {0}'.format(
         probability[0][0]))
     print('Expected value: 0.775 +/- 0.002\n')
+
+    # predict accuracy using calculated theta and given data set
+    predictions = predictOutcome(optimizedTheta, X)
+    accuracy = checkAccuracy(predictions, Y)
+    print('Train Accuracy: {0}'.format(accuracy))
+    print('Expected accuracy (approx): 89.0\n')

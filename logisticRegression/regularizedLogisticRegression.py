@@ -27,6 +27,28 @@ def visualizeDataInitial1():
     plt.show()
 
 
+def mapFeature(X, degree):
+    '''
+    Maps the two input features (X1 and X2) to quadratic features used in the
+    regularization exercise.
+
+    m - size of training set
+    n - number of features (including feature zero - 'bias')
+
+    X - the independent variables (features) (size m x n), where X[:, 0] = 1
+    Y - the highest power of any feature
+
+    return -  a new feature array with more features, comprising of X1, X2,
+    X1.^2, X2.^2, X1*X2, X1*X2.^2, etc..
+    '''
+    res = X[:, 0]
+    for i in range(1, degree + 1):
+        for j in range(i+1):
+            res = np.column_stack(
+                (res, np.multiply(np.power(X[:, 1], i - j), np.power(X[:, 2], j))))
+    return res
+
+
 if __name__ == "__main__":
     # visualize data
     visualizeDataInitial1()

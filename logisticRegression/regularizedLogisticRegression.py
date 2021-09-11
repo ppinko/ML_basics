@@ -49,6 +49,49 @@ def mapFeature(X, degree):
     return res
 
 
+def costLogisticRegressionWithRegularization(theta, X, Y, lambd):
+    """
+    Cost function for logistic regression with multiple features using
+    regularization with parameter lambda.
+
+    Equation:
+    cost = (1 / m) * sum((-Y * log(h))-((1 - Y)* log(1 - h))) 
+        + (lambda / 2m) * sum(theta .^ 2)
+
+    m - size of training set
+    n - number of features (including feature zero - 'bias')
+
+    theta - the coefficent for the features (size n x 1)
+    Y - output, target variable (size m x 1)
+    X - the independent variables (features) (size m x n)
+    lambd - regularization parameter lambda
+
+    return - cost for given theta using regularization
+    """
+    m = len(Y)
+    theta = theta.reshape(len(theta), 1)
+    leftTrue = -Y * np.log(logReg.hypothesisLogisticRegression(theta, X))
+    rightFalse = -(1-Y) * np.log(1 -
+                                 logReg.hypothesisLogisticRegression(theta, X))
+    regularizedPart = 0.5 * (lambd / m) * np.power(theta, 2).sum()
+    return (1.0 / m) * np.add(leftTrue, rightFalse).sum() + regularizedPart
+
+
 if __name__ == "__main__":
     # visualize data
     visualizeDataInitial1()
+
+    # load data for testing
+    df = pd.read_csv('microchipsQuailityAssurance.txt')
+    X = np.array(df[['testA', 'testB']])
+    X = np.column_stack((np.ones((len(X))), X))
+    Y = np.array(df['decision'])
+    Y = Y.reshape(len(Y), 1)
+
+    # test for cost function and gradient
+    thetaZero = np.zeros(3)
+    initLambda = 1
+    costForThetaZero = costLogisticRegressionWithRegularization(
+        thetaZero, X, Y, initLambda)
+    print('\nCost at initial theta(zeros): {0}'.format(costForThetaZero))
+    print('Expected cost (approx): 0.693\n')

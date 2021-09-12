@@ -55,7 +55,7 @@ def costLogisticRegressionWithRegularization(theta, X, Y, lambd):
     regularization with parameter lambda.
 
     Equation:
-    cost = (1 / m) * sum((-Y * log(h))-((1 - Y)* log(1 - h))) 
+    cost = (1 / m) * sum((-Y * log(h))-((1 - Y)* log(1 - h)))
         + (lambda / 2m) * sum(theta .^ 2)
 
     m - size of training set
@@ -77,6 +77,36 @@ def costLogisticRegressionWithRegularization(theta, X, Y, lambd):
     return (1.0 / m) * np.add(leftTrue, rightFalse).sum() + regularizedPart
 
 
+def gradientLogisticRegressionWithRegularization(theta, X, Y, lambd):
+    """
+    Calculates gradient for logistic regression with multiple features using
+    regularization with parameter lambda.
+
+    Equation:
+    grad = (1 / m) * (X' * (h - Y)) + (lambda / m) * theta
+
+    m - size of training set
+    n - number of features (including feature zero - 'bias')
+
+    Y - output, target variable (size m x 1)
+    X - the independent variables (features) (size m x n)
+    theta - the coefficent for the features (size n x 1)
+    lambd - regularization parameter lambda
+
+    return - optimal gradient
+    """
+    m = len(Y)
+    n = len(theta)
+    zeroFirst = np.ones(n)
+    zeroFirst = theta.reshape(len(zeroFirst), 1)
+    zeroFirst[0, 0] = 0
+    theta = theta.reshape(len(theta), 1)
+
+    grad = (1.0 / m) * np.dot(np.transpose(X),
+                              logReg.hypothesisLogisticRegression(theta, X) - Y) + (lambd / m) * np.multiply(theta, zeroFirst)
+    return grad.flatten()
+
+
 if __name__ == "__main__":
     # visualize data
     visualizeDataInitial1()
@@ -88,10 +118,19 @@ if __name__ == "__main__":
     Y = np.array(df['decision'])
     Y = Y.reshape(len(Y), 1)
 
+    # map features to 6th power
+    mapX = mapFeature(X, degree=6)
+
     # test for cost function and gradient
-    thetaZero = np.zeros(3)
+    thetaZero = np.zeros(np.shape(mapX)[1])
     initLambda = 1
     costForThetaZero = costLogisticRegressionWithRegularization(
-        thetaZero, X, Y, initLambda)
+        thetaZero, mapX, Y, initLambda)
     print('\nCost at initial theta(zeros): {0}'.format(costForThetaZero))
     print('Expected cost (approx): 0.693\n')
+    gradForThetaZero = gradientLogisticRegressionWithRegularization(
+        thetaZero, mapX, Y, initLambda)
+    print('\nGradient at initial theta (zeros) - first five values only:')
+    print(gradForThetaZero[:5])
+    print('Expected gradients (approx) - first five values only:')
+    print(' 0.0085 0.0188 0.0001 0.0503 0.0115\n')

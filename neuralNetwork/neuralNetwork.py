@@ -47,6 +47,83 @@ def plotExamples(cmVal, data):
     plt.show()
 
 
+def sigmoid(Z):
+    """
+    Sigmoid function used in logistic regression.
+
+    Equation:
+    result = 1 / (1 + e^(-z))
+    m - size of training set
+
+    Z - input, target variable (size m x 1)
+
+    return - result of sigmoid function
+    """
+    z = np.exp(-Z)
+    sig = 1 / (1 + z)
+    return sig
+
+
+def hypothesisLogisticRegression(theta, X):
+    """
+    Calculates hypthothesis for logistic regression.
+
+    Equation:
+    h = g(X * theta)
+    where:
+        g(z) = 1 / (1 + e^(-z)) # sigmoid function
+
+    m - size of training set
+    n - number of features (including feature zero - 'bias')
+
+    X - the independent variables (features) (size m x n)
+    theta - the coefficent for the features (size n x 1)
+
+    return - value based on the hyphothesis
+    """
+    theta = theta.reshape(len(theta), 1)
+    temp = np.dot(X, theta)
+    return sigmoid(temp)
+
+
+def costLogisticRegressionWithRegularization(theta, X, y, lambd):
+    """
+    Cost function for logistic regression with multiple features using
+    regularization with parameter lambda.
+    It calculates also gradient.
+
+    Equation:
+    cost = (1 / m) * sum((-Y * log(h))-((1 - Y)* log(1 - h)))
+        + (lambda / 2m) * sum(theta .^ 2)
+    grad = (1 / m) * (X' * (h - Y)) + (lambda / m) * theta
+
+    m - size of training set
+    n - number of features (including feature zero - 'bias')
+
+    theta - the coefficent for the features (size n x 1)
+    Y - output, target variable (size m x 1)
+    X - the independent variables (features) (size m x n)
+    lambd - regularization parameter lambda
+
+    return - a tuple with cost for given theta using regularization and gradient
+    """
+    m = len(y)
+    h_x = hypothesisLogisticRegression(theta, X)
+    theta = theta.reshape(len(theta), 1)
+    leftTrue = -y * np.log(h_x)
+    rightFalse = -(1-y) * np.log(1 - h_x)
+    regularizedPart = 0.5 * (lambd / m) * np.power(theta[1:], 2).sum()
+    cost = (1.0 / m) * np.add(leftTrue, rightFalse).sum() + regularizedPart
+
+    grad = np.zeros(np.shape(theta)[0])
+    grad = grad.reshape(len(grad), 1)
+    grad[0, 0] = (1.0 / m) * np.dot(np.transpose(X[:, 0]), h_x - y)
+    grad[1:] = (1.0 / m) * np.dot(np.transpose(X[:, 1:]),
+                                  h_x - y) + (lambd / m) * theta[1:]
+    grad = grad.flatten()
+    return (cost, grad)
+
+
 if __name__ == "__main__":
     # 20x20 Input Images of Digits
     input_layer_size = 400
@@ -72,3 +149,20 @@ if __name__ == "__main__":
         tempSamples[i] = data['X'][val, :]
     # plot the figure
     plotExamples(viridis, tempSamples)
+
+    # test for cost and gradient
+    theta_t = np.array(object=(-2, -1, 1, 2))
+    temp = np.array([1.0, 1.0, 1.0, 1.0, 1.0] +
+                    list(np.arange(0.1, 1.6, 0.1)), dtype=np.float64)
+    X_t = temp.reshape(4, 5).transpose()
+    y_t = np.array([[1], [0], [1], [0], [1]])
+    lambda_t = 3
+    (J, grad) = costLogisticRegressionWithRegularization(
+        theta_t, X_t, y_t, lambda_t)
+
+    print('\nCost: {0}'.format(J))
+    print('Expected cost: 2.534819\n')
+    print('Gradients:\n')
+    print(' {0} '.format(grad))
+    print('Expected gradients:')
+    print(' 0.146561 -0.548558 0.724722 1.398003\n')

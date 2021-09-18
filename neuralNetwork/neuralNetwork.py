@@ -112,12 +112,15 @@ def costLogisticRegressionWithRegularization(theta, X, y, lambd):
     theta = theta.reshape(len(theta), 1)
     leftTrue = -y * np.log(h_x)
     rightFalse = -(1-y) * np.log(1 - h_x)
+    # regularized part does not include theta[0]
     regularizedPart = 0.5 * (lambd / m) * np.power(theta[1:], 2).sum()
     cost = (1.0 / m) * np.add(leftTrue, rightFalse).sum() + regularizedPart
 
     grad = np.zeros(np.shape(theta)[0])
     grad = grad.reshape(len(grad), 1)
+    # for the first element of gradient we do not take into account regularization
     grad[0, 0] = (1.0 / m) * np.dot(np.transpose(X[:, 0]), h_x - y)
+    # for all left elements, regularization part is calculated
     grad[1:] = (1.0 / m) * np.dot(np.transpose(X[:, 1:]),
                                   h_x - y) + (lambd / m) * theta[1:]
     grad = grad.flatten()

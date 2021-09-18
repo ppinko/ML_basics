@@ -54,3 +54,16 @@ print('Before assignment:\n{0}'.format(A1))
 zeros = np.zeros((2, 2), dtype=int)
 A1[1:3, 1:3] = zeros
 print(A1)
+
+# concatenate arrays
+print('\nConcatenate arrays:')
+Con1 = np.array(object=[[1, 2], [3, 4]])
+print('Con1 = {}'.format(Con1))
+Con2 = np.array(object=[[1], [3]])
+print('Con2 = {}'.format(Con2))
+# if axis = 0, then new rows will be added
+Con3 = np.concatenate((Con1, Con2.transpose()), axis=0)
+print('Con3 = {}'.format(Con3))
+# if axis = 1, then new columns will be added
+Con4 = np.concatenate((Con1, Con2), axis=1)
+print('Con4 = {}'.format(Con4))

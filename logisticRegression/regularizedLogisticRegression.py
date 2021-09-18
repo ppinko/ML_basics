@@ -73,7 +73,7 @@ def costLogisticRegressionWithRegularization(theta, X, Y, lambd):
     leftTrue = -Y * np.log(logReg.hypothesisLogisticRegression(theta, X))
     rightFalse = -(1-Y) * np.log(1 -
                                  logReg.hypothesisLogisticRegression(theta, X))
-    regularizedPart = 0.5 * (lambd / m) * np.power(theta, 2).sum()
+    regularizedPart = 0.5 * (lambd / m) * np.power(theta[1:], 2).sum()
     return (1.0 / m) * np.add(leftTrue, rightFalse).sum() + regularizedPart
 
 
@@ -96,16 +96,17 @@ def gradientLogisticRegressionWithRegularization(theta, X, Y, lambd):
     return - optimal gradient
     """
     m = len(Y)
-    n = len(theta)
-    zeroFirst = np.ones(n)
-    zeroFirst = theta.reshape(len(zeroFirst), 1)
-    zeroFirst[0][0] = 0
-    print(zeroFirst)
+    h_x = logReg.hypothesisLogisticRegression(theta, X)
     theta = theta.reshape(len(theta), 1)
-
-    grad = (1.0 / m) * np.dot(np.transpose(X),
-                              logReg.hypothesisLogisticRegression(theta, X) - Y) + (lambd / m) * np.multiply(theta, zeroFirst)
-    return grad.flatten()
+    grad = np.zeros(np.shape(theta)[0])
+    grad = grad.reshape(len(grad), 1)
+    # for the first element of gradient we do not take into account regularization
+    grad[0, 0] = (1.0 / m) * np.dot(np.transpose(X[:, 0]), h_x - Y)
+    # for all left elements, regularization part is calculated
+    grad[1:] = (1.0 / m) * np.dot(np.transpose(X[:, 1:]),
+                                  h_x - Y) + (lambd / m) * theta[1:]
+    grad = grad.flatten()
+    return grad
 
 
 def optimizeTheta(theta, X, Y, costFunction, gradientFunction, method, lambd):
